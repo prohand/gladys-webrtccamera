@@ -1,0 +1,538 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "WebRTC Camera",
+  "description": {
+    "en": "Your go2rtc cameras in Gladys: snapshots, status, WebRTC live view and scenes.",
+    "fr": "Vos caméras go2rtc dans Gladys : images, état, direct WebRTC et scènes.",
+    "de": "Deine go2rtc-Kameras in Gladys: Bilder, Status, WebRTC-Livebild und Szenen.",
+    "es": "Sus cámaras go2rtc en Gladys: imágenes, estado, directo WebRTC y escenas."
+  },
+  "version": "1.0.0",
+  "docker_image": "ghcr.io/prohand/gladys-webrtccamera:1.0.0",
+  "gladys_version": ">=5.3.0",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-webrtccamera/main/cover.png",
+  "categories": ["security", "multimedia"],
+  "keywords": [
+    "go2rtc",
+    "webrtc",
+    "rtsp",
+    "frigate",
+    "ip camera",
+    "caméra",
+    "cctv",
+    "reolink",
+    "hikvision",
+    "tapo"
+  ],
+  "countries": [
+    "FR",
+    "BE",
+    "CH",
+    "LU",
+    "MC",
+    "DE",
+    "AT",
+    "ES",
+    "PT",
+    "IT",
+    "NL",
+    "GB",
+    "IE",
+    "US",
+    "CA",
+    "PL",
+    "SE",
+    "DK",
+    "NO",
+    "FI"
+  ],
+  "transports": ["local"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "This integration reads your cameras through go2rtc, the WebRTC camera server (standalone, or the one inside Frigate or the Home Assistant add-on). Give the address of its API, port 1984 by default: every go2rtc stream becomes a camera in Gladys.",
+        "fr": "Cette intégration lit vos caméras à travers go2rtc, le serveur de caméras WebRTC (seul, ou celui inclus dans Frigate ou l'add-on Home Assistant). Indiquez l'adresse de son API, port 1984 par défaut : chaque flux go2rtc devient une caméra dans Gladys.",
+        "de": "Diese Integration liest deine Kameras über go2rtc, den WebRTC-Kameraserver (eigenständig oder der in Frigate bzw. im Home-Assistant-Add-on enthaltene). Gib die Adresse seiner API an, standardmäßig Port 1984: Jeder go2rtc-Stream wird zu einer Kamera in Gladys.",
+        "es": "Esta integración lee sus cámaras a través de go2rtc, el servidor de cámaras WebRTC (solo, o el incluido en Frigate o en el complemento de Home Assistant). Indique la dirección de su API, puerto 1984 por defecto: cada flujo de go2rtc se convierte en una cámara en Gladys."
+      },
+      "links": [
+        {
+          "url": "https://github.com/AlexxIT/go2rtc",
+          "label": {
+            "en": "go2rtc",
+            "fr": "go2rtc",
+            "de": "go2rtc",
+            "es": "go2rtc"
+          }
+        },
+        {
+          "url": "https://github.com/prohand/gladys-webrtccamera/blob/main/docs/en.md",
+          "label": {
+            "en": "Integration documentation",
+            "fr": "Documentation de l'intégration",
+            "de": "Dokumentation der Integration",
+            "es": "Documentación de la integración"
+          }
+        }
+      ]
+    },
+    {
+      "key": "go2rtc_url",
+      "type": "string",
+      "label": {
+        "en": "go2rtc address",
+        "fr": "Adresse de go2rtc",
+        "de": "go2rtc-Adresse",
+        "es": "Dirección de go2rtc"
+      },
+      "description": {
+        "en": "Address of the go2rtc API on your network, as Gladys reaches it.",
+        "fr": "Adresse de l'API go2rtc sur votre réseau, telle que Gladys la joint.",
+        "de": "Adresse der go2rtc-API in deinem Netzwerk, so wie Gladys sie erreicht.",
+        "es": "Dirección de la API de go2rtc en su red, tal como Gladys la alcanza."
+      },
+      "placeholder": {
+        "en": "http://192.168.1.20:1984",
+        "fr": "http://192.168.1.20:1984",
+        "de": "http://192.168.1.20:1984",
+        "es": "http://192.168.1.20:1984"
+      },
+      "required": true
+    },
+    {
+      "key": "username",
+      "type": "string",
+      "label": {
+        "en": "User name",
+        "fr": "Identifiant",
+        "de": "Benutzername",
+        "es": "Usuario"
+      },
+      "description": {
+        "en": "Only if the go2rtc API is protected (api.username in go2rtc.yaml).",
+        "fr": "Seulement si l'API go2rtc est protégée (api.username dans go2rtc.yaml).",
+        "de": "Nur wenn die go2rtc-API geschützt ist (api.username in go2rtc.yaml).",
+        "es": "Solo si la API de go2rtc está protegida (api.username en go2rtc.yaml)."
+      },
+      "required": false
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "description": {
+        "en": "Only if the go2rtc API is protected (api.password in go2rtc.yaml).",
+        "fr": "Seulement si l'API go2rtc est protégée (api.password dans go2rtc.yaml).",
+        "de": "Nur wenn die go2rtc-API geschützt ist (api.password in go2rtc.yaml).",
+        "es": "Solo si la API de go2rtc está protegida (api.password en go2rtc.yaml)."
+      },
+      "required": false
+    },
+    {
+      "key": "streams",
+      "type": "string",
+      "label": {
+        "en": "Cameras",
+        "fr": "Caméras",
+        "de": "Kameras",
+        "es": "Cámaras"
+      },
+      "description": {
+        "en": "Names of the go2rtc streams to add to Gladys, separated by commas. Leave empty to add them all.",
+        "fr": "Noms des flux go2rtc à ajouter dans Gladys, séparés par des virgules. Laissez vide pour tous les ajouter.",
+        "de": "Namen der go2rtc-Streams, die in Gladys aufgenommen werden, durch Kommas getrennt. Leer lassen, um alle aufzunehmen.",
+        "es": "Nombres de los flujos de go2rtc que se añaden a Gladys, separados por comas. Déjelo vacío para añadirlos todos."
+      },
+      "placeholder": {
+        "en": "entrance, garden",
+        "fr": "entree, jardin",
+        "de": "eingang, garten",
+        "es": "entrada, jardin"
+      },
+      "required": false
+    },
+    {
+      "key": "refresh_interval",
+      "type": "number",
+      "label": {
+        "en": "Image refresh (s)",
+        "fr": "Rafraîchissement des images (s)",
+        "de": "Bildaktualisierung (s)",
+        "es": "Actualización de imágenes (s)"
+      },
+      "description": {
+        "en": "Seconds between two images of every camera, sent to Gladys. It is also how a camera that stops answering is detected. 0: images only when Gladys asks for one.",
+        "fr": "Secondes entre deux images de chaque caméra, envoyées à Gladys. C'est aussi ce qui détecte une caméra qui ne répond plus. 0 : images seulement quand Gladys en demande une.",
+        "de": "Sekunden zwischen zwei Bildern jeder Kamera, die an Gladys gesendet werden. Daran wird auch eine Kamera erkannt, die nicht mehr antwortet. 0: Bilder nur, wenn Gladys eines anfordert.",
+        "es": "Segundos entre dos imágenes de cada cámara, enviadas a Gladys. También es lo que detecta una cámara que deja de responder. 0: imágenes solo cuando Gladys pide una."
+      },
+      "required": false,
+      "default": 60,
+      "min": 0,
+      "max": 3600
+    },
+    {
+      "key": "snapshot_width",
+      "type": "number",
+      "label": {
+        "en": "Image width (px)",
+        "fr": "Largeur des images (px)",
+        "de": "Bildbreite (px)",
+        "es": "Ancho de las imágenes (px)"
+      },
+      "description": {
+        "en": "Width of the images sent to Gladys. Gladys accepts 150 KB at most: a too heavy image is retried narrower.",
+        "fr": "Largeur des images envoyées à Gladys. Gladys accepte 150 Ko au plus : une image trop lourde est redemandée plus étroite.",
+        "de": "Breite der an Gladys gesendeten Bilder. Gladys akzeptiert höchstens 150 KB: Ein zu großes Bild wird schmaler neu angefordert.",
+        "es": "Ancho de las imágenes enviadas a Gladys. Gladys acepta 150 KB como máximo: una imagen demasiado pesada se vuelve a pedir más estrecha."
+      },
+      "required": false,
+      "default": 640,
+      "min": 160,
+      "max": 1920
+    },
+    {
+      "key": "live_view_url",
+      "type": "string",
+      "label": {
+        "en": "Live view address (https)",
+        "fr": "Adresse du direct (https)",
+        "de": "Adresse der Live-Ansicht (https)",
+        "es": "Dirección del directo (https)"
+      },
+      "description": {
+        "en": "Optional. The https address of go2rtc as your browser reaches it (reverse proxy). It adds a WebRTC live view button to the widgets. Leave empty if go2rtc is not published in https.",
+        "fr": "Facultatif. L'adresse https de go2rtc telle que votre navigateur la joint (reverse proxy). Elle ajoute un bouton de direct WebRTC aux widgets. Laissez vide si go2rtc n'est pas publié en https.",
+        "de": "Optional. Die https-Adresse von go2rtc, wie dein Browser sie erreicht (Reverse Proxy). Sie fügt den Widgets eine WebRTC-Live-Schaltfläche hinzu. Leer lassen, wenn go2rtc nicht über https erreichbar ist.",
+        "es": "Opcional. La dirección https de go2rtc tal como la alcanza su navegador (proxy inverso). Añade un botón de directo WebRTC a los widgets. Déjelo vacío si go2rtc no está publicado en https."
+      },
+      "placeholder": {
+        "en": "https://cameras.example.com",
+        "fr": "https://cameras.exemple.fr",
+        "de": "https://kameras.beispiel.de",
+        "es": "https://camaras.ejemplo.es"
+      },
+      "required": false
+    },
+    {
+      "key": "debug_logs",
+      "type": "boolean",
+      "label": {
+        "en": "Detailed logs (debug)",
+        "fr": "Journaux détaillés (debug)",
+        "de": "Detaillierte Protokolle (Debug)",
+        "es": "Registros detallados (depuración)"
+      },
+      "description": {
+        "en": "Log every image taken and every error. Turn it off once the problem is found: it is verbose. Passwords are never logged.",
+        "fr": "Journalise chaque image prise et chaque erreur. Désactivez-le une fois le problème trouvé : c'est verbeux. Les mots de passe ne sont jamais journalisés.",
+        "de": "Protokolliert jedes aufgenommene Bild und jeden Fehler. Schalte es aus, sobald das Problem gefunden ist: Es ist ausführlich. Passwörter werden nie protokolliert.",
+        "es": "Registra cada imagen tomada y cada error. Desactívelo una vez encontrado el problema: es muy prolijo. Las contraseñas nunca se registran."
+      },
+      "required": false,
+      "default": false
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "test_snapshot",
+      "label": {
+        "en": "Test an image",
+        "fr": "Tester une image",
+        "de": "Bild testen",
+        "es": "Probar una imagen"
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Camera",
+            "fr": "Caméra",
+            "de": "Kamera",
+            "es": "Cámara"
+          },
+          "required": true
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "cameras",
+      "label": {
+        "en": "Cameras",
+        "fr": "Caméras",
+        "de": "Kameras",
+        "es": "Cámaras"
+      },
+      "description": {
+        "en": "Last image and state of every camera, and the go2rtc server status.",
+        "fr": "Dernière image et état de chaque caméra, et état du serveur go2rtc.",
+        "de": "Letztes Bild und Zustand jeder Kamera sowie Status des go2rtc-Servers.",
+        "es": "Última imagen y estado de cada cámara, y estado del servidor go2rtc."
+      },
+      "icon": "video",
+      "action_timeout_seconds": 60
+    },
+    {
+      "key": "camera",
+      "label": {
+        "en": "Camera",
+        "fr": "Caméra",
+        "de": "Kamera",
+        "es": "Cámara"
+      },
+      "description": {
+        "en": "One camera in large, with a new image button and the WebRTC live view.",
+        "fr": "Une caméra en grand, avec un bouton nouvelle image et le direct WebRTC.",
+        "de": "Eine Kamera groß, mit Schaltfläche für ein neues Bild und WebRTC-Livebild.",
+        "es": "Una cámara en grande, con botón de nueva imagen y el directo WebRTC."
+      },
+      "icon": "camera",
+      "settings": [
+        {
+          "key": "camera",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Camera",
+            "fr": "Caméra",
+            "de": "Kamera",
+            "es": "Cámara"
+          },
+          "description": {
+            "en": "Camera to show. Empty: the first one.",
+            "fr": "Caméra à afficher. Vide : la première.",
+            "de": "Anzuzeigende Kamera. Leer: die erste.",
+            "es": "Cámara que se muestra. Vacío: la primera."
+          },
+          "required": false
+        }
+      ],
+      "action_timeout_seconds": 20
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "camera_offline",
+      "label": {
+        "en": "A camera stops answering",
+        "fr": "Une caméra ne répond plus",
+        "de": "Eine Kamera antwortet nicht mehr",
+        "es": "Una cámara deja de responder"
+      },
+      "description": {
+        "en": "Two images in a row failed, or go2rtc itself is down. Fires once, at the change.",
+        "fr": "Deux images de suite ont échoué, ou go2rtc lui-même est arrêté. Se déclenche une fois, au changement.",
+        "de": "Zwei Bilder hintereinander sind fehlgeschlagen oder go2rtc selbst ist ausgefallen. Löst einmal aus, beim Wechsel.",
+        "es": "Dos imágenes seguidas han fallado, o el propio go2rtc está caído. Se activa una vez, en el cambio."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Camera",
+            "fr": "Caméra",
+            "de": "Kamera",
+            "es": "Cámara"
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Camera name",
+            "fr": "Nom de la caméra",
+            "de": "Name der Kamera",
+            "es": "Nombre de la cámara"
+          }
+        },
+        {
+          "key": "reason",
+          "type": "string",
+          "label": {
+            "en": "Reason (code)",
+            "fr": "Raison (code)",
+            "de": "Grund (Code)",
+            "es": "Motivo (código)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "camera_online",
+      "label": {
+        "en": "A camera answers again",
+        "fr": "Une caméra répond de nouveau",
+        "de": "Eine Kamera antwortet wieder",
+        "es": "Una cámara vuelve a responder"
+      },
+      "description": {
+        "en": "A camera that was offline sent an image again.",
+        "fr": "Une caméra hors ligne a de nouveau envoyé une image.",
+        "de": "Eine Kamera, die offline war, hat wieder ein Bild gesendet.",
+        "es": "Una cámara que estaba sin conexión ha vuelto a enviar una imagen."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Camera",
+            "fr": "Caméra",
+            "de": "Kamera",
+            "es": "Cámara"
+          },
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Camera name",
+            "fr": "Nom de la caméra",
+            "de": "Name der Kamera",
+            "es": "Nombre de la cámara"
+          }
+        },
+        {
+          "key": "offline_seconds",
+          "type": "number",
+          "label": {
+            "en": "Time offline (s)",
+            "fr": "Durée hors ligne (s)",
+            "de": "Dauer offline (s)",
+            "es": "Tiempo sin conexión (s)"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "take_snapshot",
+      "label": {
+        "en": "Take a camera image",
+        "fr": "Prendre une image de caméra",
+        "de": "Kamerabild aufnehmen",
+        "es": "Tomar una imagen de cámara"
+      },
+      "description": {
+        "en": "Takes a fresh image now, so that \"Send a camera image\" right after sends this one.",
+        "fr": "Prend une image fraîche maintenant, pour qu'« Envoyer une image de caméra » juste après envoie celle-ci.",
+        "de": "Nimmt jetzt ein frisches Bild auf, damit „Kamerabild senden“ direkt danach dieses sendet.",
+        "es": "Toma una imagen nueva ahora, para que «Enviar una imagen de cámara» justo después envíe esta."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Camera",
+            "fr": "Caméra",
+            "de": "Kamera",
+            "es": "Cámara"
+          },
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "key": "success",
+          "type": "boolean",
+          "label": {
+            "en": "Image taken",
+            "fr": "Image prise",
+            "de": "Bild aufgenommen",
+            "es": "Imagen tomada"
+          }
+        },
+        {
+          "key": "size_kb",
+          "type": "number",
+          "label": {
+            "en": "Image size (KB)",
+            "fr": "Taille de l'image (Ko)",
+            "de": "Bildgröße (KB)",
+            "es": "Tamaño de la imagen (KB)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "refresh_cameras",
+      "label": {
+        "en": "Read the go2rtc cameras again",
+        "fr": "Relire les caméras go2rtc",
+        "de": "go2rtc-Kameras neu einlesen",
+        "es": "Volver a leer las cámaras go2rtc"
+      },
+      "description": {
+        "en": "Reads the go2rtc stream list now and adds the new cameras to Gladys.",
+        "fr": "Relit maintenant la liste des flux go2rtc et ajoute les nouvelles caméras dans Gladys.",
+        "de": "Liest jetzt die Liste der go2rtc-Streams und nimmt neue Kameras in Gladys auf.",
+        "es": "Lee ahora la lista de flujos de go2rtc y añade las cámaras nuevas a Gladys."
+      },
+      "timeout_seconds": 20,
+      "outputs": [
+        {
+          "key": "cameras",
+          "type": "number",
+          "label": {
+            "en": "Number of cameras",
+            "fr": "Nombre de caméras",
+            "de": "Anzahl der Kameras",
+            "es": "Número de cámaras"
+          }
+        },
+        {
+          "key": "online",
+          "type": "number",
+          "label": {
+            "en": "Cameras not offline",
+            "fr": "Caméras non hors ligne",
+            "de": "Nicht offline Kameras",
+            "es": "Cámaras no desconectadas"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+# WebRTC Camera
+
+Bring die Kameras deines **go2rtc**-Servers in Gladys: Bilder im Dashboard, Kamerastatus,
+WebRTC-Livebild, Szenenauslöser und -aktionen.
+
+[go2rtc](https://github.com/AlexxIT/go2rtc) ist der Kameraserver, der fast jede Kamera liest
+(RTSP, ONVIF, Tapo, Reolink, HomeKit, Ring…) und per WebRTC bereitstellt. Er läuft eigenständig
+und ist auch in **Frigate** und im **Home-Assistant**-Add-on enthalten: Vielleicht hast du schon
+einen.
+
+## Voraussetzungen
+
+- Gladys 5.3 oder neuer.
+- Ein go2rtc-Server, den Gladys in deinem Netzwerk erreicht (API standardmäßig auf Port **1984**).
+- Deine Kameras in go2rtc eingetragen (Abschnitt `streams:` in `go2rtc.yaml`).
+
+## Konfiguration
+
+| Feld                             | Was eintragen                                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| go2rtc-Adresse                   | Die go2rtc-API, z. B. `http://192.168.1.20:1984`.                                                                        |
+| Benutzername / Passwort          | Nur wenn die go2rtc-API geschützt ist (`api.username` / `api.password`).                                                 |
+| Kameras                          | Namen der aufzunehmenden Streams, durch Kommas getrennt. Leer: alle Streams.                                             |
+| Bildaktualisierung (s)           | Sekunden zwischen zwei Bildern jeder Kamera (Standard 60). Erkennt auch eine Kamera, die nicht mehr antwortet. 0: aus.   |
+| Bildbreite (px)                  | Breite der Bilder (Standard 640). Gladys akzeptiert max. 150 KB: Ein zu großes Bild wird schmaler neu angefordert.       |
+| Adresse der Live-Ansicht (https) | Optional: go2rtc hinter einem https-Reverse-Proxy, wie dein Browser ihn sieht. Fügt eine WebRTC-Live-Schaltfläche hinzu. |
+| Detaillierte Protokolle          | Protokolliert jedes Bild und jeden Fehler. Danach wieder ausschalten.                                                    |
+
+Dann:
+
+1. Klicke auf **Verbindung testen**: Die Antwort nennt die go2rtc-Version und die gefundenen
+   Kameras.
+2. Öffne den Reiter **Entdecken** und füge die Kameras zu Gladys hinzu.
+3. Optional: **Bild testen** prüft eine Kamera (Größe, Dauer).
+
+Jeder go2rtc-Stream wird zu einer Kamera in Gladys. Die Geräte-ID kommt vom Stream-Namen:
+**Ein Stream, der in go2rtc umbenannt wird, erzeugt eine neue Kamera** in Gladys.
+
+## Kamerastatus
+
+- Eine Kamera ist **offline** nach zwei fehlgeschlagenen Bildern hintereinander, oder sofort,
+  wenn go2rtc selbst nicht antwortet. Ihr Badge zeigt dann „nicht erreichbar“.
+- Der Status der Integration (Konfigurationsseite) zeigt, ob go2rtc antwortet, und wenn nicht,
+  warum (falsche Adresse, falsches Passwort…).
+- Mit „Bildaktualisierung“ auf 0 wird der Status nur aktualisiert, wenn ein Bild angefordert
+  wird.
+
+## Szenen
+
+**Auslöser**
+
+- **Eine Kamera antwortet nicht mehr** — Filter: Kamera. Variablen: Name der Kamera, Grund (Code:
+  `http_error`, `timeout`, `server_unreachable`, `auth`, …).
+- **Eine Kamera antwortet wieder** — Filter: Kamera. Variablen: Name der Kamera, Dauer offline (s).
+
+Sie lösen einmal aus, beim Wechsel. Eine Kamera, die beim Start von Gladys schon ausgefallen ist,
+wird offline angezeigt, löst aber nichts aus.
+
+**Aktionen**
+
+- **Kamerabild aufnehmen** — nimmt jetzt ein frisches Bild auf. Setze sie direkt vor die
+  Gladys-Aktion „Kamerabild senden“, um ein aktuelles Bild zu senden. Ausgaben: Bild aufgenommen
+  (ja/nein), Größe (KB).
+- **go2rtc-Kameras neu einlesen** — nimmt neue Streams auf. Ausgaben: Anzahl der Kameras, nicht
+  offline Kameras.
+
+Beispiel: _Eine Kamera antwortet nicht mehr_ → _Nachricht senden_ „Kamera {{device_name}} ist
+offline ({{reason}})“.
+
+## Dashboard-Widgets
+
+- **Kameras**: alle Kameras mit ihrem letzten Bild, ihrem Zustand und einem Link zum Livebild;
+  der go2rtc-Status; eine Schaltfläche, um alle Bilder zu aktualisieren.
+- **Kamera**: eine Kamera groß (in den Widget-Einstellungen gewählt), ihr Zustand, eine
+  Schaltfläche **Neues Bild** und eine Schaltfläche **Live-Ansicht**.
+
+Die Live-Ansicht öffnet den WebRTC-Player von go2rtc (`stream.html?mode=webrtc`). Gladys öffnet
+nur https-Links: Trage unter **Adresse der Live-Ansicht** eine https-Adresse von go2rtc ein
+(Reverse Proxy). Ohne sie werden die Live-Schaltflächen ausgeblendet.
+
+## Fehlerbehebung
+
+| Meldung                                         | Was tun                                                                            |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------- |
+| go2rtc ist nicht erreichbar                     | Adresse und Port prüfen, und ob Gladys diesen Rechner erreicht.                    |
+| go2rtc hat Benutzername oder Passwort abgelehnt | Felder mit `api.username` / `api.password` von go2rtc vergleichen.                 |
+| diese Adresse ist keine go2rtc-API              | Die Adresse zeigt auf einen anderen Dienst: den Port der go2rtc-API (1984) nutzen. |
+| go2rtc konnte die Kamera nicht lesen            | go2rtc kann den Stream nicht öffnen: in der go2rtc-Weboberfläche prüfen.           |
+| das Bild bleibt über 150 KB                     | Die **Bildbreite** verringern.                                                     |
+
+Für Bilder muss go2rtc das Video dekodieren: Bei H.264/H.265-Kameras nutzt go2rtc **FFmpeg**
+(in seinem Docker-Image und in Frigate enthalten).
+
+## Datenschutz
+
+- Die Integration spricht nur mit deinem go2rtc-Server. Keine Cloud.
+- Die von go2rtc gelisteten Kamera-URLs (oft mit Passwort) werden nie an Gladys gesendet und nie
+  protokolliert.
+- Die Bilder bleiben im Speicher (das letzte pro Kamera).

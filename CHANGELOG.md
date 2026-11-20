@@ -10,6 +10,8 @@ Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-20
+
 ### Added
 
 - First version of the WebRTC Camera integration: every stream of a go2rtc server becomes a
@@ -26,4 +28,5 @@ Release.
 - CI (Prettier, ESLint, tests on Node 22 and 24, store checks, Docker build), multi-arch image
   build, Release workflow, GitHub Releases, Dependabot.
 
-[Unreleased]: https://github.com/prohand/gladys-webrtccamera/commits/main
+[Unreleased]: https://github.com/prohand/gladys-webrtccamera/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/prohand/gladys-webrtccamera/releases/tag/v1.0.1

@@ -8,8 +8,8 @@
     "de": "Deine go2rtc-Kameras in Gladys: Bilder, Status, WebRTC-Livebild und Szenen.",
     "es": "Sus cámaras go2rtc en Gladys: imágenes, estado, directo WebRTC y escenas."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/prohand/gladys-webrtccamera:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/prohand/gladys-webrtccamera:1.0.1",
   "gladys_version": ">=5.3.0",
   "cover_image": "https://raw.githubusercontent.com/prohand/gladys-webrtccamera/main/cover.png",
   "categories": ["security", "multimedia"],
